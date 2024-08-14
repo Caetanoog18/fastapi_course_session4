@@ -78,7 +78,11 @@ async def put_course(course_id: int, course: CourseSchema, db: AsyncSession = De
 
             course_up.title = course.title
             course_up.classes = course.classes
-            course_up.duratiHTTP_202_ACCEPTED
+            course_up.duration = course.duration
+
+            await session.commit()
+
+            return course_up
         
         else:
             raise HTTPException(detail="Course was not found", status_code=status.HTTP_404_NOT_FOUND)
