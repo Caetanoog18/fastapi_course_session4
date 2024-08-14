@@ -78,11 +78,25 @@ async def put_course(course_id: int, course: CourseSchema, db: AsyncSession = De
 
             course_up.title = course.title
             course_up.classes = course.classes
-            course_up.duration = course.duration
-
-            await session.commit()
-
-            return course_up
+            course_up.duratiHTTP_202_ACCEPTED
         
         else:
-            raise HTTPException(detail="Course was not found", status_code=status.HTTP_202_ACCEPTED)
+            raise HTTPException(detail="Course was not found", status_code=status.HTTP_404_NOT_FOUND)
+        
+# DELETE course
+@router.delete('/{course_id}', status_code=status.HTTP_204_NO_CONTENT)
+async def delete_course(course_id: int, db: AsyncSession = Depends(get_session)):
+    async with db as session:
+        query = select(CourseModel).filter(CourseModel.id == course_id)
+        result = await session.execute(query)
+        course_del = result.scalar_one_or_none()
+
+        if course_del:
+            await session.delete(course_del)
+            await session.commit()
+
+            return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+        else:
+            raise HTTPException(detail="Course was not found", status_code=status.HTTP_404_NOT_FOUND)
+
